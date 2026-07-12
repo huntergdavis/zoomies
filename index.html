@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0c13">
+  <meta name="description" content="Zoomies is a fast PS1 rooftop runner starring Munchii, a very good beagle with four decades of graphical chaos.">
+  <meta property="og:title" content="Zoomies">
+  <meta property="og:description" content="Run, jump, grab treats, and crash through four eras of game graphics.">
+  <meta property="og:image" content="assets/era-2000s.webp">
+  <title>Zoomies | A very good PS1 rooftop runner</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-nav" aria-label="Primary navigation">
+    <a class="wordmark" href="#top">ZOOMIES</a>
+    <nav>
+      <a href="#eras">Four eras</a>
+      <a class="nav-download" href="#download">Download</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="hero-copy">
+        <p class="eyebrow">A new game for the original PlayStation</p>
+        <h1>ZOOMIES</h1>
+        <p class="hero-lede">Munchii runs. Treats make the world prettier. Hazards send television history crashing back down on him.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" id="hero-download" href="https://github.com/huntergdavis/zoomies/releases/latest/download/zoomies-ps1.zip">Download latest PS1 build</a>
+          <a class="button button-secondary" href="#eras">See the eras</a>
+        </div>
+        <p class="build-line"><span data-release-version>v0.1.1-ps1</span> / BIN + CUE / work in progress</p>
+      </div>
+    </section>
+
+    <section class="era-band" id="eras">
+      <div class="section-heading">
+        <p class="eyebrow">One run. Four visual lives.</p>
+        <h2>Every power level changes the whole broadcast.</h2>
+        <p>Black-and-white console TV, loud 1980s CRT, early-2000s LCD, then Munchii in the real world.</p>
+      </div>
+
+      <div class="era-grid">
+        <figure>
+          <img src="assets/era-1950s.webp" alt="Zoomies gameplay in black and white inside a wooden 1950s television" loading="lazy">
+          <figcaption><strong>Level 1</strong><span>1950s broadcast</span></figcaption>
+        </figure>
+        <figure>
+          <img src="assets/era-1980s.webp" alt="Zoomies gameplay inside a chunky 1980s CRT television" loading="lazy">
+          <figcaption><strong>Level 2</strong><span>1980s cartoon CRT</span></figcaption>
+        </figure>
+        <figure>
+          <img src="assets/era-2000s.webp" alt="Zoomies gameplay inside an early-2000s flat-panel display" loading="lazy">
+          <figcaption><strong>Level 3</strong><span>Early-2000s digital</span></figcaption>
+        </figure>
+        <figure>
+          <img src="assets/era-modern.webp" alt="Modern Zoomies gameplay with a detailed Munchii running across rooftops" loading="lazy">
+          <figcaption><strong>Level 4</strong><span>Real-world Munchii</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="effect-band">
+      <div class="section-heading section-heading-light">
+        <p class="eyebrow">Treats up. Hazards down.</p>
+        <h2>The game makes a scene about it.</h2>
+        <p>Era-specific reactions slam over the frozen run while the soundtrack switches with the world.</p>
+      </div>
+
+      <div class="effect-grid">
+        <figure class="effect-stage">
+          <img class="effect-art effect-oops" src="assets/oops-overlay.webp" alt="Colorful early-2000s OOPS effect over gameplay" loading="lazy">
+          <figcaption>Hit a hazard</figcaption>
+        </figure>
+        <figure class="effect-stage effect-stage-good">
+          <img class="effect-art effect-good" src="assets/good-boy-overlay.webp" alt="Colorful early-2000s GOOD BOY effect over gameplay" loading="lazy">
+          <figcaption>Grab a treat</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="sprite-band">
+      <div class="section-heading">
+        <p class="eyebrow">Same beagle. Different decade.</p>
+        <h2>Munchii in motion.</h2>
+      </div>
+      <div class="sprite-grid">
+        <article><span>1950s</span><img src="assets/munchii-1950s.webp" alt="Munchii's 1950s run and jump animation frames" loading="lazy"></article>
+        <article><span>1980s</span><img src="assets/munchii-1980s.webp" alt="Munchii's 1980s run and jump animation frames" loading="lazy"></article>
+        <article><span>2000s</span><img src="assets/munchii-2000s.webp" alt="Munchii's early-2000s run and jump animation frames" loading="lazy"></article>
+        <article><span>Modern</span><img src="assets/munchii-modern.webp" alt="Munchii's modern run and jump animation frames" loading="lazy"></article>
+      </div>
+    </section>
+
+    <section class="download-band" id="download">
+      <div>
+        <p class="eyebrow">Ready for a run?</p>
+        <h2>Download Zoomies.</h2>
+        <p>Unzip the archive and load <code>pspsps.cue</code> in a PlayStation emulator or compatible setup. A PlayStation BIOS is not included.</p>
+      </div>
+      <div class="download-actions">
+        <a class="button button-dark" id="download-link" href="https://github.com/huntergdavis/zoomies/releases/latest/download/zoomies-ps1.zip">Download <span data-release-version>v0.1.1-ps1</span></a>
+        <a id="bin-link" href="https://github.com/huntergdavis/zoomies/releases/latest/download/pspsps.bin">BIN</a>
+        <a id="cue-link" href="https://github.com/huntergdavis/zoomies/releases/latest/download/pspsps.cue">CUE</a>
+        <a id="notes-link" href="https://github.com/huntergdavis/zoomies/releases/latest">Release notes</a>
+        <a id="checksum-link" href="https://github.com/huntergdavis/zoomies/releases/latest/download/SHA256SUMS.txt">Checksums</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>ZOOMIES</strong>
+    <span>Built for PS1. Starring Munchii.</span>
+  </footer>
+</body>
+</html>
