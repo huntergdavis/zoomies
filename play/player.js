@@ -1,4 +1,5 @@
 const EMULATORJS_VERSION = "4.2.3";
+const CORE_ASSET_VERSION = "20260714-0130";
 const SETTINGS_SCHEMA_VERSION = 2;
 const launchButton = document.querySelector("#launch-button");
 const retryButton = document.querySelector("#retry-button");
@@ -139,11 +140,23 @@ function installEmulator(metadata) {
   window.EJS_gameID = SETTINGS_SCHEMA_VERSION;
   window.EJS_biosUrl = "";
   window.EJS_pathtodata = "../vendor/emulatorjs/data/";
+  window.EJS_paths = {
+    "pcsx_rearmed.json": resolvePageUrl(
+      `../vendor/emulatorjs/data/cores/reports/pcsx_rearmed.json?v=${CORE_ASSET_VERSION}`,
+    ),
+    "pcsx_rearmed-wasm.data": resolvePageUrl(
+      `../vendor/emulatorjs/data/cores/pcsx_rearmed-wasm.data?v=${CORE_ASSET_VERSION}`,
+    ),
+    "pcsx_rearmed-legacy-wasm.data": resolvePageUrl(
+      `../vendor/emulatorjs/data/cores/pcsx_rearmed-legacy-wasm.data?v=${CORE_ASSET_VERSION}`,
+    ),
+  };
   window.EJS_color = "#72f58a";
   window.EJS_volume = 1;
   window.EJS_threads = false;
   window.EJS_disableCue = true;
   window.EJS_CacheLimit = 0;
+  window.EJS_disableDatabases = true;
   // A post-load gate supplies a fresh audio gesture after the context exists.
   window.EJS_startOnLoaded = true;
   window.EJS_startButtonName = "Run Zoomies";
