@@ -98,6 +98,11 @@ class ZoomiesDevHandler(SimpleHTTPRequestHandler):
         super().do_HEAD()
 
     def end_headers(self) -> None:
+        if not any(
+            header.lower().startswith(b"cache-control:")
+            for header in self._headers_buffer
+        ):
+            self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
         super().end_headers()
 
