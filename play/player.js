@@ -1,4 +1,5 @@
 const EMULATORJS_VERSION = "4.2.3";
+const SETTINGS_SCHEMA_VERSION = 2;
 const launchButton = document.querySelector("#launch-button");
 const retryButton = document.querySelector("#retry-button");
 const launchStage = document.querySelector("#launch-stage");
@@ -135,6 +136,7 @@ function installEmulator(metadata) {
   window.EJS_gameUrl = resolvePageUrl(metadata.cue_url);
   window.EJS_gameParentUrl = resolvePageUrl(metadata.bin_url);
   window.EJS_gameName = "Zoomies";
+  window.EJS_gameID = SETTINGS_SCHEMA_VERSION;
   window.EJS_biosUrl = "";
   window.EJS_pathtodata = "../vendor/emulatorjs/data/";
   window.EJS_color = "#72f58a";
@@ -151,6 +153,7 @@ function installEmulator(metadata) {
     pcsx_rearmed_bios: "HLE",
     pcsx_rearmed_nocdaudio: "enabled",
     pcsx_rearmed_noxadecoding: "enabled",
+    pcsx_rearmed_spu_interpolation: "gaussian",
   };
   window.EJS_defaultControls = {
     0: {
