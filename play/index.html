@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0b0c13">
   <meta name="description" content="Run the current Zoomies PlayStation build in a browser.">
-  <title>Play Zoomies | Local HLE Prototype</title>
+  <title>Play Zoomies in Your Browser</title>
   <link rel="stylesheet" href="player.css">
-  <script src="player.js?v=audio-quality-fix-2" defer></script>
+  <script src="player.js?v=online-player-1" defer></script>
 </head>
 <body>
   <header class="player-bar">
     <a class="player-wordmark" href="../">ZOOMIES</a>
     <div class="runtime-status" aria-label="Emulator configuration">
-      <span id="build-label">Current local build</span>
+      <span id="build-label">Latest playable build</span>
       <span class="audio-state" id="audio-state" data-state="pending" aria-live="polite">Audio pending</span>
       <span class="hle-badge">PCSX-ReARMed HLE</span>
     </div>
@@ -26,16 +26,16 @@
       <img src="../assets/era-modern.webp" alt="Modern Zoomies gameplay with Munchii running across rooftops">
       <div class="launch-shade"></div>
       <div class="launch-copy">
-        <p class="eyebrow">Local browser prototype</p>
-        <h1>Run the current PS1 build.</h1>
+        <p class="eyebrow">Playable in your browser</p>
+        <h1>Run the latest PS1 build.</h1>
         <button id="launch-button" type="button">Launch Zoomies</button>
-        <p id="launch-status" class="launch-status" role="status">Waiting for the local development server.</p>
+        <p id="launch-status" class="launch-status" role="status">Ready to load the latest release.</p>
       </div>
     </section>
 
     <section class="error-stage" id="error-stage" hidden>
       <p class="eyebrow">Player unavailable</p>
-      <h1>The local disc could not be loaded.</h1>
+      <h1>The game could not be loaded.</h1>
       <p id="error-message"></p>
       <button id="retry-button" type="button">Try again</button>
     </section>

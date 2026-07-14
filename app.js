@@ -12,7 +12,7 @@ fetch(`https://api.github.com/repos/${repo}/releases/latest`, {
   })
   .then((release) => {
     document.querySelectorAll("[data-release-version]").forEach((node) => {
-      node.textContent = release.tag;
+      node.textContent = release.tag_name;
     });
     document.querySelector("#hero-download").href = `${releaseRoot}/download/zoomies-ps1.zip`;
     document.querySelector("#download-link").href = `${releaseRoot}/download/zoomies-ps1.zip`;

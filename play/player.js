@@ -38,6 +38,10 @@ function formatMegabytes(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function resolvePageUrl(value) {
+  return new URL(value, window.location.href).href;
+}
+
 function showError(message) {
   launchStarted = false;
   launchButton.disabled = false;
@@ -128,8 +132,8 @@ function unlockAudioFromGesture() {
 function installEmulator(metadata) {
   window.EJS_player = "#game";
   window.EJS_core = "pcsx_rearmed";
-  window.EJS_gameUrl = metadata.cue_url;
-  window.EJS_gameParentUrl = metadata.bin_url;
+  window.EJS_gameUrl = resolvePageUrl(metadata.cue_url);
+  window.EJS_gameParentUrl = resolvePageUrl(metadata.bin_url);
   window.EJS_gameName = "Zoomies";
   window.EJS_biosUrl = "";
   window.EJS_pathtodata = "../vendor/emulatorjs/data/";
@@ -197,23 +201,23 @@ async function launch() {
 
   launchStarted = true;
   launchButton.disabled = true;
-  launchStatus.textContent = "Checking the current development disc...";
+  launchStatus.textContent = "Checking the latest playable build...";
 
   try {
-    const response = await fetch("/game/metadata.json", { cache: "no-store" });
+    const response = await fetch("../game/metadata.json", { cache: "no-store" });
     if (!response.ok) {
-      throw new Error(`development server returned HTTP ${response.status}`);
+      throw new Error(`game server returned HTTP ${response.status}`);
     }
 
     const metadata = await response.json();
     if (!metadata.cue_url || !metadata.bin_url || !metadata.bin_size) {
-      throw new Error("development server returned incomplete disc metadata");
+      throw new Error("game server returned incomplete disc metadata");
     }
 
-    launchStatus.textContent = `Loading ${formatMegabytes(metadata.bin_size)} from the development tree...`;
+    launchStatus.textContent = `Loading ${formatMegabytes(metadata.bin_size)}...`;
     installEmulator(metadata);
   } catch (error) {
-    showError(`${error.message}. Start this page with the Zoomies local web launcher.`);
+    showError(`${error.message}. Check the Zoomies release page and try again.`);
   }
 }
 
@@ -221,7 +225,7 @@ launchButton.addEventListener("click", launch);
 retryButton.addEventListener("click", () => {
   errorStage.hidden = true;
   launchStage.hidden = false;
-  launchStatus.textContent = "Waiting for the local development server.";
+  launchStatus.textContent = "Checking the latest playable build...";
   launch();
 });
 

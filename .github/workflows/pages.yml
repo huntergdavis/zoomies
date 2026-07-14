@@ -9,6 +9,8 @@ on:
       - "app.js"
       - ".nojekyll"
       - "assets/**"
+      - "play/**"
+      - "vendor/emulatorjs/data/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -31,9 +33,39 @@ jobs:
       - name: Assemble site artifact
         run: |
           set -euo pipefail
-          mkdir _site
+          mkdir -p _site/vendor/emulatorjs
           cp index.html styles.css app.js .nojekyll _site/
           cp -R assets _site/assets
+          cp -R play _site/play
+          cp -R vendor/emulatorjs/data _site/vendor/emulatorjs/data
+
+      - name: Add latest playable release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p _site/game
+          gh release download --repo "$GITHUB_REPOSITORY" \
+            --pattern pspsps.bin \
+            --pattern pspsps.cue \
+            --pattern SHA256SUMS.txt \
+            --dir _site/game
+          (cd _site/game && sha256sum --check SHA256SUMS.txt)
+          tag="$(gh release view --repo "$GITHUB_REPOSITORY" \
+            --json tagName --jq .tagName)"
+          bin_size="$(stat -c %s _site/game/pspsps.bin)"
+          jq -n \
+            --arg tag "$tag" \
+            --argjson bin_size "$bin_size" \
+            '{
+              bin_size: $bin_size,
+              bin_url: ("../game/pspsps.bin?v=" + $tag),
+              bios: "HLE",
+              build_id: $tag,
+              build_label: ($tag + " public release"),
+              core: "pcsx_rearmed",
+              cue_url: ("../game/pspsps.cue?v=" + $tag)
+            }' > _site/game/metadata.json
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

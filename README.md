@@ -4,6 +4,7 @@ Public website, screenshots, and downloadable PlayStation release artifacts for
 Zoomies.
 
 - Website: <https://hunterdavis.com/zoomies/>
+- Play online: <https://hunterdavis.com/zoomies/play/>
 - Downloads: <https://github.com/huntergdavis/zoomies/releases/latest>
 
 The game engine, build system, and source art are maintained separately in a
