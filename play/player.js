@@ -1,6 +1,6 @@
 const EMULATORJS_VERSION = "4.2.3";
 const CORE_ASSET_VERSION = "20260714-230800";
-const SETTINGS_SCHEMA_VERSION = 2;
+const SETTINGS_SCHEMA_VERSION = 3;
 const launchButton = document.querySelector("#launch-button");
 const retryButton = document.querySelector("#retry-button");
 const launchStage = document.querySelector("#launch-stage");
@@ -57,6 +57,30 @@ function showError(message) {
 function emulatorAudioContext() {
   const module = window.EJS_emulator?.Module;
   return module?.RWA?.context ?? module?.AL?.currentCtx?.audioCtx ?? null;
+}
+
+function focusEmulator() {
+  const target = window.EJS_emulator?.elements?.parent ?? gameSurface;
+  if (typeof target?.focus === "function") {
+    target.focus({ preventScroll: true });
+  }
+}
+
+function selectConnectedGamepad() {
+  const emulator = window.EJS_emulator;
+  if (!emulator?.gamepadSelection || emulator.gamepadSelection[0]) {
+    return;
+  }
+
+  const gamepad = emulator.gamepad?.gamepads?.find((candidate) => candidate);
+  if (!gamepad) {
+    return;
+  }
+
+  emulator.gamepadSelection[0] = `${gamepad.id}_${gamepad.index}`;
+  if (typeof emulator.updateGamepadLabels === "function") {
+    emulator.updateGamepadLabels();
+  }
 }
 
 function forceAudibleVolume() {
@@ -170,16 +194,16 @@ function installEmulator(metadata) {
   };
   window.EJS_defaultControls = {
     0: {
-      0: { value: "k", value2: "BUTTON_2" },
-      1: { value: "j", value2: "BUTTON_4" },
+      0: { value: "k", value2: "BUTTON_1" },
+      1: { value: "j", value2: "BUTTON_3" },
       2: { value: "backspace", value2: "SELECT" },
       3: { value: "enter", value2: "START" },
       4: { value: "up arrow", value2: "DPAD_UP" },
       5: { value: "down arrow", value2: "DPAD_DOWN" },
       6: { value: "left arrow", value2: "DPAD_LEFT" },
       7: { value: "right arrow", value2: "DPAD_RIGHT" },
-      8: { value: "l", value2: "BUTTON_1" },
-      9: { value: "i", value2: "BUTTON_3" },
+      8: { value: "l", value2: "BUTTON_2" },
+      9: { value: "i", value2: "BUTTON_4" },
       10: { value: "q", value2: "LEFT_TOP_SHOULDER" },
       11: { value: "e", value2: "RIGHT_TOP_SHOULDER" },
       12: { value: "1", value2: "LEFT_BOTTOM_SHOULDER" },
@@ -199,6 +223,8 @@ function installEmulator(metadata) {
     installWebAudioVolumeBridge();
     forceAudibleVolume();
     renderAudioState();
+    selectConnectedGamepad();
+    requestAnimationFrame(focusEmulator);
   };
 
   gameSurface.classList.add("is-active");
@@ -245,7 +271,10 @@ retryButton.addEventListener("click", () => {
   launch();
 });
 
-audioUnlockButton.addEventListener("click", () => void unlockAudio());
+audioUnlockButton.addEventListener("click", async () => {
+  await unlockAudio();
+  focusEmulator();
+});
 document.addEventListener("pointerdown", unlockAudioFromGesture, true);
 document.addEventListener("keydown", unlockAudioFromGesture, true);
 document.addEventListener("touchstart", unlockAudioFromGesture, {
