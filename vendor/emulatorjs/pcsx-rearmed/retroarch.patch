@@ -1,3 +1,15 @@
+diff --git a/audio/drivers/rwebaudio.c b/audio/drivers/rwebaudio.c
+index 82f8f34..d32c19b 100644
+--- a/audio/drivers/rwebaudio.c
++++ b/audio/drivers/rwebaudio.c
+@@ -109,0 +110,7 @@ static ssize_t rwebaudio_write(void *data, const void *s, size_t len)
++#ifdef EMSCRIPTEN_AUDIO_FAKE_BLOCK
++   if (!rwebaudio->nonblock && RWebAudioResumeCtx()
++         && RWebAudioWriteAvailFrames() >
++            RWebAudioBufferSizeFrames() / 2 + rwebaudio->tmpbuf_offset)
++      platform_emscripten_enter_fake_block(0);
++#endif
++
 diff --git a/configuration.c b/configuration.c
 index 3198f99..db0f23c 100644
 --- a/configuration.c

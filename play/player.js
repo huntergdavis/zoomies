@@ -1,5 +1,5 @@
 const EMULATORJS_VERSION = "4.2.3";
-const CORE_ASSET_VERSION = "20260714-0130";
+const CORE_ASSET_VERSION = "20260714-230800";
 const SETTINGS_SCHEMA_VERSION = 2;
 const launchButton = document.querySelector("#launch-button");
 const retryButton = document.querySelector("#retry-button");

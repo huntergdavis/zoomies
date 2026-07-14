@@ -28,7 +28,11 @@ The RetroArch patch exposes the core's `AudioContext` and routes it through a
 master `GainNode`. This lets the pinned EmulatorJS 4.2.3 page unlock audio and
 keeps its mute and volume controls functional. It also defaults the web build
 to RetroArch's 16-tap sinc resampler instead of the low-quality four-tap CC
-resampler used by the upstream Emscripten configuration.
+resampler used by the upstream Emscripten configuration. When the audio queue
+falls below half full, the patched driver temporarily runs immediate emulator
+iterations until the existing 64 ms queue is replenished. This prevents a
+throttled browser animation callback from starving WebAudio without increasing
+the steady-state audio latency.
 
 Run `./build.sh` from this directory with Emscripten, Git, Make, and 7-Zip on
 `PATH`. It rebuilds distinct WebGL2 and legacy packages. After replacing a core,
