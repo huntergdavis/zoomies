@@ -9,9 +9,12 @@ on:
       - "app.js"
       - ".nojekyll"
       - "assets/**"
+      - "docs/**"
       - "play/**"
       - "vendor/emulatorjs/data/**"
       - ".github/workflows/pages.yml"
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
@@ -45,27 +48,77 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _site/game
+
+          mapfile -t release_assets < <(
+            gh release view --repo "$GITHUB_REPOSITORY" \
+              --json assets --jq '.assets[].name'
+          )
+          has_asset() {
+            printf '%s\n' "${release_assets[@]}" | grep -Fxq -- "$1"
+          }
+
+          if has_asset Zoomies.bin && has_asset Zoomies.cue; then
+            disc_bin=Zoomies.bin
+            disc_cue=Zoomies.cue
+          elif has_asset pspsps.bin && has_asset pspsps.cue; then
+            disc_bin=pspsps.bin
+            disc_cue=pspsps.cue
+          else
+            echo "Latest release has no complete supported BIN/CUE pair" >&2
+            exit 1
+          fi
+
           gh release download --repo "$GITHUB_REPOSITORY" \
-            --pattern pspsps.bin \
-            --pattern pspsps.cue \
+            --pattern "$disc_bin" \
+            --pattern "$disc_cue" \
             --pattern SHA256SUMS.txt \
             --dir _site/game
-          (cd _site/game && sha256sum --check SHA256SUMS.txt)
+
+          cover_name=""
+          if has_asset Zoomies-cover.png; then
+            cover_name=Zoomies-cover.png
+            gh release download --repo "$GITHUB_REPOSITORY" \
+              --pattern "$cover_name" --dir _site/game
+          fi
+
+          verify_release_file() {
+            local filename="$1"
+            local checksum
+            checksum="$(awk -v name="$filename" '$2 == name { print }' \
+              _site/game/SHA256SUMS.txt)"
+            if [ -z "$checksum" ]; then
+              echo "No checksum published for $filename" >&2
+              return 1
+            fi
+            (cd _site/game && printf '%s\n' "$checksum" | sha256sum --check -)
+          }
+          verify_release_file "$disc_bin"
+          verify_release_file "$disc_cue"
+          if [ -n "$cover_name" ]; then
+            verify_release_file "$cover_name"
+          fi
+
           tag="$(gh release view --repo "$GITHUB_REPOSITORY" \
             --json tagName --jq .tagName)"
-          bin_size="$(stat -c %s _site/game/pspsps.bin)"
+          bin_size="$(stat -c %s "_site/game/$disc_bin")"
           jq -n \
             --arg tag "$tag" \
+            --arg disc_bin "$disc_bin" \
+            --arg disc_cue "$disc_cue" \
+            --arg cover_name "$cover_name" \
             --argjson bin_size "$bin_size" \
             '{
               bin_size: $bin_size,
-              bin_url: ("../game/pspsps.bin?v=" + $tag),
+              bin_url: ("../game/" + $disc_bin + "?v=" + $tag),
               bios: "HLE",
               build_id: $tag,
               build_label: ($tag + " public release"),
               core: "pcsx_rearmed",
-              cue_url: ("../game/pspsps.cue?v=" + $tag)
-            }' > _site/game/metadata.json
+              cue_url: ("../game/" + $disc_cue + "?v=" + $tag)
+            }
+            + if $cover_name == "" then {}
+              else {cover_url: ("../game/" + $cover_name + "?v=" + $tag)}
+              end' > _site/game/metadata.json
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

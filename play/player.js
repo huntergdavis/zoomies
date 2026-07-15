@@ -12,6 +12,7 @@ const errorMessage = document.querySelector("#error-message");
 const audioGate = document.querySelector("#audio-gate");
 const audioState = document.querySelector("#audio-state");
 const audioUnlockButton = document.querySelector("#audio-unlock-button");
+const launchArt = document.querySelector("#launch-art");
 
 let launchStarted = false;
 let watchedAudioContext = null;
@@ -156,6 +157,10 @@ function unlockAudioFromGesture() {
 }
 
 function installEmulator(metadata) {
+  if (metadata.cover_url) {
+    launchArt.src = resolvePageUrl(metadata.cover_url);
+    launchArt.alt = "Zoomies cover art featuring Munchii";
+  }
   window.EJS_player = "#game";
   window.EJS_core = "pcsx_rearmed";
   window.EJS_gameUrl = resolvePageUrl(metadata.cue_url);
@@ -163,6 +168,10 @@ function installEmulator(metadata) {
   window.EJS_gameName = "Zoomies";
   window.EJS_gameID = SETTINGS_SCHEMA_VERSION;
   window.EJS_biosUrl = "";
+  window.EJS_backgroundImage = resolvePageUrl(
+    metadata.cover_url ?? "../assets/era-modern.webp",
+  );
+  window.EJS_backgroundBlur = false;
   window.EJS_pathtodata = "../vendor/emulatorjs/data/";
   window.EJS_paths = {
     "pcsx_rearmed.json": resolvePageUrl(

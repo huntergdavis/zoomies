@@ -8,19 +8,46 @@ import email.utils
 import functools
 import json
 import os
+import re
 import socket
 from datetime import datetime
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 
 
 SITE_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_DISC = Path.home() / "workspace" / "pspsps-engine" / "pspsps.bin"
+ENGINE_ROOT = Path.home() / "workspace" / "pspsps-engine"
+PREFERRED_DISC = ENGINE_ROOT / "Zoomies.bin"
+LEGACY_DISC = ENGINE_ROOT / "pspsps.bin"
+
+
+def default_disc_path() -> Path:
+    for candidate in (PREFERRED_DISC, LEGACY_DISC):
+        if candidate.is_file():
+            return candidate
+    return PREFERRED_DISC
+
+
+def default_cover_path(disc: Path) -> Path | None:
+    candidates = (
+        disc.with_name("Zoomies-cover.png"),
+        disc.parent / "assets" / "branding" / "Zoomies-cover.png",
+    )
+    return next((candidate for candidate in candidates if candidate.is_file()), None)
+
+
+def cue_bin_names(cue: Path) -> list[str]:
+    pattern = re.compile(r'^\s*FILE\s+"([^"]+)"\s+BINARY\s*$', re.IGNORECASE)
+    return [
+        match.group(1)
+        for line in cue.read_text(encoding="ascii").splitlines()
+        if (match := pattern.match(line)) is not None
+    ]
 
 
 class ZoomiesDevHandler(SimpleHTTPRequestHandler):
-    server_version = "ZoomiesDevServer/0.1"
+    server_version = "ZoomiesDevServer/0.2"
 
     @property
     def disc_path(self) -> Path:
@@ -30,8 +57,16 @@ class ZoomiesDevHandler(SimpleHTTPRequestHandler):
     def cue_path(self) -> Path:
         return self.server.cue_path  # type: ignore[attr-defined]
 
+    @property
+    def cover_path(self) -> Path | None:
+        return self.server.cover_path  # type: ignore[attr-defined]
+
     def _request_path(self) -> str:
         return urlsplit(self.path).path
+
+    @staticmethod
+    def _game_url(path: Path) -> str:
+        return f"/game/{quote(path.name, safe='')}"
 
     def _build_id(self) -> str:
         stat = self.disc_path.stat()
@@ -43,13 +78,15 @@ class ZoomiesDevHandler(SimpleHTTPRequestHandler):
         modified = datetime.fromtimestamp(stat.st_mtime).astimezone()
         payload = {
             "bin_size": stat.st_size,
-            "bin_url": f"/game/pspsps.bin?v={build_id}",
+            "bin_url": f"{self._game_url(self.disc_path)}?v={build_id}",
             "bios": "HLE",
             "build_id": build_id,
             "build_label": modified.strftime("build %Y-%m-%d %H:%M:%S"),
             "core": "pcsx_rearmed",
-            "cue_url": f"/game/pspsps.cue?v={build_id}",
+            "cue_url": f"{self._game_url(self.cue_path)}?v={build_id}",
         }
+        if self.cover_path is not None:
+            payload["cover_url"] = f"{self._game_url(self.cover_path)}?v={build_id}"
         return json.dumps(payload, separators=(",", ":")).encode("utf-8")
 
     def _send_bytes(self, data: bytes, content_type: str, head_only: bool) -> None:
@@ -79,10 +116,12 @@ class ZoomiesDevHandler(SimpleHTTPRequestHandler):
 
     def send_head(self):
         path = self._request_path()
-        if path == "/game/pspsps.bin":
+        if path == self._game_url(self.disc_path):
             return self._send_disc_file(self.disc_path, "application/octet-stream")
-        if path == "/game/pspsps.cue":
+        if path == self._game_url(self.cue_path):
             return self._send_disc_file(self.cue_path, "text/plain; charset=utf-8")
+        if self.cover_path is not None and path == self._game_url(self.cover_path):
+            return self._send_disc_file(self.cover_path, "image/png")
         return super().send_head()
 
     def do_GET(self) -> None:
@@ -114,7 +153,8 @@ class ZoomiesDevHandler(SimpleHTTPRequestHandler):
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--disc", type=Path, default=DEFAULT_DISC)
+    parser.add_argument("--disc", type=Path, default=default_disc_path())
+    parser.add_argument("--cover", type=Path)
     parser.add_argument("--site", type=Path, default=SITE_ROOT)
     parser.add_argument("--host", default="0.0.0.0")
     parser.add_argument("--port", type=int, default=8080)
@@ -148,6 +188,11 @@ def main() -> None:
     site = args.site.expanduser().resolve()
     disc = args.disc.expanduser().resolve()
     cue = disc.with_suffix(".cue")
+    cover = (
+        args.cover.expanduser().resolve()
+        if args.cover is not None
+        else default_cover_path(disc)
+    )
 
     if not site.joinpath("play", "index.html").is_file():
         raise SystemExit(f"ERROR: Zoomies player not found under {site}")
@@ -155,13 +200,16 @@ def main() -> None:
         raise SystemExit(f"ERROR: development BIN not found: {disc}")
     if not cue.is_file():
         raise SystemExit(f"ERROR: development CUE not found: {cue}")
-    if 'FILE "pspsps.bin" BINARY' not in cue.read_text(encoding="ascii"):
-        raise SystemExit(f"ERROR: CUE does not reference pspsps.bin: {cue}")
+    if disc.name not in cue_bin_names(cue):
+        raise SystemExit(f"ERROR: CUE does not reference {disc.name}: {cue}")
+    if cover is not None and not cover.is_file():
+        raise SystemExit(f"ERROR: cover art not found: {cover}")
 
     handler = functools.partial(ZoomiesDevHandler, directory=str(site))
     server = open_server(args.host, args.port, handler)
     server.disc_path = disc  # type: ignore[attr-defined]
     server.cue_path = cue  # type: ignore[attr-defined]
+    server.cover_path = cover  # type: ignore[attr-defined]
     server.daemon_threads = True
 
     port = server.server_address[1]

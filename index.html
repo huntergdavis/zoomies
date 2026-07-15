@@ -100,12 +100,13 @@
       <div>
         <p class="eyebrow">Ready for a run?</p>
         <h2>Download Zoomies.</h2>
-        <p>Unzip the archive and load <code>pspsps.cue</code> in a PlayStation emulator or compatible setup. A PlayStation BIOS is not included.</p>
+        <p>Unzip the archive and load <code id="disc-filename">pspsps.cue</code> in a PlayStation emulator or compatible setup. A PlayStation BIOS is not included.</p>
       </div>
       <div class="download-actions">
         <a class="button button-dark" id="download-link" href="https://github.com/huntergdavis/zoomies/releases/latest/download/zoomies-ps1.zip">Download <span data-release-version>v0.1.1-ps1</span></a>
         <a id="bin-link" href="https://github.com/huntergdavis/zoomies/releases/latest/download/pspsps.bin">BIN</a>
         <a id="cue-link" href="https://github.com/huntergdavis/zoomies/releases/latest/download/pspsps.cue">CUE</a>
+        <a id="cover-link" href="https://github.com/huntergdavis/zoomies/releases/latest/download/Zoomies-cover.png" hidden>Cover art</a>
         <a id="notes-link" href="https://github.com/huntergdavis/zoomies/releases/latest">Release notes</a>
         <a id="checksum-link" href="https://github.com/huntergdavis/zoomies/releases/latest/download/SHA256SUMS.txt">Checksums</a>
       </div>
@@ -113,8 +114,16 @@
   </main>
 
   <footer>
-    <strong>ZOOMIES</strong>
-    <span>Built for PS1. Starring Munchii.</span>
+    <div class="footer-brand">
+      <strong>ZOOMIES</strong>
+      <span>Built for PS1. Starring Munchii.</span>
+    </div>
+    <p class="footer-credit">
+      OOPS and GOOD BOY sounds adapted from
+      <a href="https://kenney.nl/" rel="noopener">audio by Kenney Vleugels</a>,
+      available under <a href="https://creativecommons.org/publicdomain/zero/1.0/" rel="license noopener">CC0 1.0</a>.
+      <a href="https://github.com/huntergdavis/zoomies/blob/main/docs/SOUND_EFFECTS_CREDITS.md">Sources and edits</a>.
+    </p>
   </footer>
 </body>
 </html>

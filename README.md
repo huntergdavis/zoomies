@@ -9,7 +9,12 @@ Zoomies.
 
 The game engine, build system, and source art are maintained separately in a
 private repository. Public releases contain the playable BIN/CUE image,
-checksums, and release notes.
+Zoomies cover art, checksums, and release notes. New releases use
+`Zoomies.bin`, `Zoomies.cue`, and `Zoomies-cover.png`; the site continues to
+accept the legacy `pspsps.bin` and `pspsps.cue` release names.
+
+OOPS and GOOD BOY sound-effect attribution is documented in
+[`docs/SOUND_EFFECTS_CREDITS.md`](docs/SOUND_EFFECTS_CREDITS.md).
 
 ## Local browser prototype
 
