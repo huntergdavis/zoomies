@@ -13,7 +13,8 @@ Zoomies cover art, checksums, and release notes. New releases use
 `Zoomies.bin`, `Zoomies.cue`, and `Zoomies-cover.png`; the site continues to
 accept the legacy `pspsps.bin` and `pspsps.cue` release names.
 
-OOPS and GOOD BOY sound-effect attribution is documented in
+Music and sound-effect attribution is documented in
+[`docs/MUSIC_CREDITS.md`](docs/MUSIC_CREDITS.md) and
 [`docs/SOUND_EFFECTS_CREDITS.md`](docs/SOUND_EFFECTS_CREDITS.md).
 
 ## Local browser prototype
